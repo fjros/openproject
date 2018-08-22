@@ -36,6 +36,7 @@ module OpenProject::TextFormatting::Formats
       def initialize; end
 
       def execute!(stdin)
+        PandocDownloader.check_or_download!
         run_pandoc! pandoc_arguments, stdin_data: stdin
       end
 
@@ -99,7 +100,7 @@ module OpenProject::TextFormatting::Formats
       ##
       # Run pandoc through open3 and raise if an exception occurred
       def run_pandoc!(args, **options)
-        output, stderr_str, status = Open3.capture3('pandoc', *args, **options)
+        output, stderr_str, status = Open3.capture3(PandocDownloader.pandoc_path, *args, **options)
         raise stderr_str unless status.success?
 
         output
